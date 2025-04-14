@@ -3,12 +3,26 @@ from surprise import SVD, Reader, Dataset
 import streamlit as st
 from gensim import corpora, models, similarities
 from prepare_data import products, ratings, final_data
+from underthesea import word_tokenize
 
 # ---------------- Gensim Model ---------------- #
-# Load mô hình và dữ liệu Gensim
-dictionary = corpora.Dictionary.load("models/tfidf_dictionary.dict")
-tfidf = models.TfidfModel.load("models/tfidf_model.tfidf")
-index = similarities.Similarity.load("models/tfidf_index.index")
+def build_gensim_index(products):
+    # Tokenize dữ liệu
+    documents = products['description_clean'].apply(lambda x: word_tokenize(str(x), format="text")).tolist()
+    tokenized_docs = [doc.split() for doc in documents]
+
+    # Tạo dictionary và TF-IDF model
+    dictionary = corpora.Dictionary(tokenized_docs)
+    corpus = [dictionary.doc2bow(text) for text in tokenized_docs]
+    tfidf_model = models.TfidfModel(corpus)
+
+    # Tạo index tương đồng
+    index = similarities.Similarity(output_prefix=None, corpus=tfidf_model[corpus], num_features=len(dictionary))
+    
+    return dictionary, tfidf_model, index
+
+# Khởi tạo dictionary, tfidf, index
+dictionary, tfidf, index = build_gensim_index(products)
 
 # Gợi ý sản phẩm tương tự một sản phẩm cụ thể
 def recommend_gensim(product_id, top_n=10):
