@@ -5,5 +5,5 @@ matplotlib
 seaborn
 scikit-learn
 underthesea
-gemsim
+gensim
 surprise
