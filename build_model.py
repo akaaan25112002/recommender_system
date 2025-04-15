@@ -44,6 +44,5 @@ data["tokens"] = content_gem_re
 data.to_pickle(os.path.join(model_dir, "processed_data.pkl"))
 dictionary.save(os.path.join(model_dir, "tfidf_dictionary.dict"))
 tfidf.save(os.path.join(model_dir, "tfidf_model.tfidf"))
-index.save(index_file)
 
 print("✅ Đã build model TF-IDF và lưu thành công.")
