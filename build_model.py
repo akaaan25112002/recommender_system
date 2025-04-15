@@ -16,7 +16,7 @@ os.makedirs(model_dir, exist_ok=True)
 index_path = os.path.join(model_dir, "sim_index.index")
 
 # Nếu đã build thì bỏ qua
-if os.path.exists(index_file):
+if os.path.exists(index_path):
     print("✅ Đã build rồi. Không cần chạy lại.")
     exit()
 
