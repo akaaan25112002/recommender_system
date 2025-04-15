@@ -12,8 +12,8 @@ product_path = os.path.join(BASE_DIR, "Data", "cleaned_products.csv")
 model_dir = os.path.join(BASE_DIR, "models")
 os.makedirs(model_dir, exist_ok=True)
 
-index_file = os.path.join(model_dir, "tfidf_index.index")
-#index_path = os.path.join(model_dir, "sim_index.index")
+#index_file = os.path.join(model_dir, "tfidf_index.index")
+index_path = os.path.join(model_dir, "sim_index.index")
 
 # Nếu đã build thì bỏ qua
 if os.path.exists(index_file):
