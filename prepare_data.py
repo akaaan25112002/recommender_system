@@ -2,6 +2,7 @@
 import pandas as pd
 import os
 from utils import filter_vietnamese_words
+from underthesea import word_tokenize
 
 # Lấy đường dẫn tuyệt đối tới thư mục hiện tại
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -31,6 +32,7 @@ data['description'] = data['description'].str.replace('\n', ' ')
 data['description_clean'] = data['description'].apply(filter_vietnamese_words)
 data['Content'] = data['product_name'] + ' ' + data['description_clean'].apply(lambda x: ' '.join(x.split()[:200]))
 final_data = pd.merge(ratings, products, how='inner', on='product_id')
+data['tokens'] = data['description_clean'].apply(lambda x: word_tokenize(str(x), format="text").split())
 # Lưu lại file đã làm sạch
 data_dir = os.path.join(BASE_DIR, "Data")
 os.makedirs(data_dir, exist_ok=True)
@@ -38,3 +40,4 @@ os.makedirs(data_dir, exist_ok=True)
 # Lưu lại file đã làm sạch
 data.to_csv(os.path.join(data_dir, "cleaned_products.csv"), index=False)
 ratings.to_csv(os.path.join(data_dir, "cleaned_ratings.csv"), index=False)
+print("Xử lý thành công")
