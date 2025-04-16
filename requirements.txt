@@ -5,6 +5,5 @@ matplotlib
 seaborn
 scikit-learn
 underthesea
+gensim
 surprise
-scipy==1.11.4
-gensim==4.3.2
