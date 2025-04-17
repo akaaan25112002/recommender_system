@@ -46,8 +46,10 @@ data['description'] = data['description'].str.replace('\n', ' ')
 data['description_clean'] = data['description'].apply(filter_vietnamese_words)
 data['Content'] = data['product_name'] + ' ' + data['description_clean'].apply(lambda x: ' '.join(x.split()[:200]))
 data['tokens'] = data['description_clean'].apply(lambda x: word_tokenize(str(x), format="text").split())
+final_data = pd.merge(ratings, products, how='inner', on='product_id')
 
 # Lưu file đã xử lý
 data.to_csv(os.path.join(DATA_DIR, "cleaned_products.csv"), index=False)
 ratings.to_csv(os.path.join(DATA_DIR, "cleaned_ratings.csv"), index=False)
 print("✅ Xử lý dữ liệu thành công")
+
