@@ -6,6 +6,7 @@ from gensim import corpora, models, similarities
 from underthesea import word_tokenize
 import os
 import ast
+from prepare_data import products, ratings, final_data  # Import từ file prepare_data
 
 # ---------------- Tải dữ liệu từ Google Drive ---------------- #
 
