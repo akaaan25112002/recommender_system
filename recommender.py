@@ -1,20 +1,43 @@
 import pandas as pd
+import gdown
 from surprise import SVD, Reader, Dataset
 import streamlit as st
 from gensim import corpora, models, similarities
-from prepare_data import products, ratings, final_data
 from underthesea import word_tokenize
 import os
 import ast
 
+# ---------------- Tải dữ liệu từ Google Drive ---------------- #
+
+# Kiểm tra nếu file chưa có trong thư mục hiện tại
+if not os.path.exists("cleaned_products.csv"):
+    print("🔽 Đang tải Products file từ Google Drive...")
+    gdown.download("https://drive.google.com/uc?id=16COzK3fj6pHSb1EBpQ6s-VL3KX5s0ufU", "cleaned_products.csv", quiet=False)
+
+if not os.path.exists("cleaned_ratings.csv"):
+    print("🔽 Đang tải Ratings file từ Google Drive...")
+    gdown.download("https://drive.google.com/uc?id=16x--zf94wa8IH0mnr9TTT8lKUBwrQ9vk", "cleaned_ratings.csv", quiet=False)
+
 # ---------------- Gensim Model ---------------- #
 
-data = pd.read_csv("Data/cleaned_products.csv")
+# Đọc dữ liệu từ các tệp CSV
+data = pd.read_csv("cleaned_products.csv")
+ratings = pd.read_csv("cleaned_ratings.csv")
 data['tokens'] = data['tokens'].apply(ast.literal_eval)
 
-dictionary = corpora.Dictionary.load("models/tfidf_dictionary.dict")
-tfidf = models.TfidfModel.load("models/tfidf_model.tfidf")
-index = similarities.Similarity.load("models/tfidf_index.index")
+# Tải các mô hình Gensim nếu đã có
+if not os.path.exists("models/tfidf_dictionary.dict"):
+    print("🔽 Tải hoặc tạo các mô hình Gensim...") 
+    # Tạo dictionary và mô hình nếu chưa có
+    dictionary = corpora.Dictionary(data['tokens'])
+    dictionary.save("models/tfidf_dictionary.dict")
+    tfidf = models.TfidfModel(dictionary)
+    tfidf.save("models/tfidf_model.tfidf")
+    index = similarities.Similarity.load("models/tfidf_index.index")
+else:
+    dictionary = corpora.Dictionary.load("models/tfidf_dictionary.dict")
+    tfidf = models.TfidfModel.load("models/tfidf_model.tfidf")
+    index = similarities.Similarity.load("models/tfidf_index.index")
 
 def recommend_gensim(product_id, top_n=10):
     if product_id not in data['product_id'].values:
