@@ -1,15 +1,29 @@
-# prepare_data.py
-import pandas as pd
 import os
+import pandas as pd
 from utils import filter_vietnamese_words
 from underthesea import word_tokenize
+import gdown
 
-# Lấy đường dẫn tuyệt đối tới thư mục hiện tại
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_DIR = os.path.join(BASE_DIR, 'Data')
+os.makedirs(DATA_DIR, exist_ok=True)
 
-# Đường dẫn tuyệt đối tới các file dữ liệu
-PRODUCTS_FILE = os.path.join(BASE_DIR, 'Data', 'Products_ThoiTrangNam_raw.csv')
-RATINGS_FILE = os.path.join(BASE_DIR, 'Data', 'Products_ThoiTrangNam_rating_raw.csv')
+# File paths
+PRODUCTS_FILE = os.path.join(DATA_DIR, 'Products_ThoiTrangNam_raw.csv')
+RATINGS_FILE = os.path.join(DATA_DIR, 'Products_ThoiTrangNam_rating_raw.csv')
+
+# Google Drive File IDs mới
+PRODUCTS_ID = "1kMQ6Fk__epxgcBQADdGSf2OdUM5YZmgR"
+RATINGS_ID = "10mS7UAzMf-VtHlvgiuSQYJ5L22LAzpdH"
+
+# Tải file nếu chưa có
+if not os.path.exists(PRODUCTS_FILE):
+    print("🔽 Đang tải Products file từ Google Drive...")
+    gdown.download(f"https://drive.google.com/uc?id={PRODUCTS_ID}", PRODUCTS_FILE, quiet=False)
+
+if not os.path.exists(RATINGS_FILE):
+    print("🔽 Đang tải Ratings file từ Google Drive...")
+    gdown.download(f"https://drive.google.com/uc?id={RATINGS_ID}", RATINGS_FILE, quiet=False)
 
 # Load dữ liệu
 products = pd.read_csv(PRODUCTS_FILE)
@@ -31,13 +45,9 @@ data['description'] = data['description'].str.replace('Danh Mục\nShopee\nThờ
 data['description'] = data['description'].str.replace('\n', ' ')
 data['description_clean'] = data['description'].apply(filter_vietnamese_words)
 data['Content'] = data['product_name'] + ' ' + data['description_clean'].apply(lambda x: ' '.join(x.split()[:200]))
-final_data = pd.merge(ratings, products, how='inner', on='product_id')
 data['tokens'] = data['description_clean'].apply(lambda x: word_tokenize(str(x), format="text").split())
-# Lưu lại file đã làm sạch
-data_dir = os.path.join(BASE_DIR, "Data")
-os.makedirs(data_dir, exist_ok=True)
 
-# Lưu lại file đã làm sạch
-data.to_csv(os.path.join(data_dir, "cleaned_products.csv"), index=False)
-ratings.to_csv(os.path.join(data_dir, "cleaned_ratings.csv"), index=False)
-print("Xử lý thành công")
+# Lưu file đã xử lý
+data.to_csv(os.path.join(DATA_DIR, "cleaned_products.csv"), index=False)
+ratings.to_csv(os.path.join(DATA_DIR, "cleaned_ratings.csv"), index=False)
+print("✅ Xử lý dữ liệu thành công")
