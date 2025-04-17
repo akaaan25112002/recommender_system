@@ -6,8 +6,10 @@ from gensim import corpora, models, similarities
 from underthesea import word_tokenize
 import os
 import ast
-from prepare_data import products, ratings, final_data  # Import từ file prepare_data
+from prepare_data import load_and_prepare_data
 
+# Gọi hàm để lấy dữ liệu sau khi file đã được tải xong
+products, ratings, final_data = load_and_prepare_data()
 # ---------------- Tải dữ liệu từ Google Drive ---------------- #
 
 # Kiểm tra nếu file chưa có trong thư mục hiện tại
