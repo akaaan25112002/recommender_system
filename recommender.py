@@ -9,11 +9,9 @@ import ast
 
 # ---------------- Gensim Model ---------------- #
 
-# Load data đã xử lý
 data = pd.read_csv("Data/cleaned_products.csv")
 data['tokens'] = data['tokens'].apply(ast.literal_eval)
 
-# Load Gensim model đã được build sẵn
 dictionary = corpora.Dictionary.load("models/tfidf_dictionary.dict")
 tfidf = models.TfidfModel.load("models/tfidf_model.tfidf")
 index = similarities.Similarity.load("models/tfidf_index.index")
