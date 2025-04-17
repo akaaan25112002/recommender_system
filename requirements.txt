@@ -8,3 +8,4 @@ underthesea
 gensim
 surprise
 gdown
+scipy==1.11.3
