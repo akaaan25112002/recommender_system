@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from data_loader import load_processed_data, load_ratings
-from recommender_module import recommend_gensim, recommend_for_user_gensim, train_svd_model, get_svd_recommendations
+from recommender import recommend_gensim, recommend_for_user_gensim, train_svd_model, get_svd_recommendations
 from utils import clean_text_row, stop_words
 from underthesea import word_tokenize
 import streamlit.components.v1 as components
