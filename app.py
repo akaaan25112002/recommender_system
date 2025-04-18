@@ -9,7 +9,6 @@ import base64
 import unicodedata
 import sys
 import os
-
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 
 # ===== Helper Functions =====
@@ -34,7 +33,7 @@ def remove_accents(text):
 
 data, dictionary, tfidf, index = load_processed_data()
 ratings = load_ratings()
-products = data.dropna(subset=["Content", "product_name"]).copy()
+products = data.dropna(subset=["Content", "product_name"]).copy()  # Clean NaNs
 
 # Tạo thêm cột không dấu để tìm kiếm
 products['product_name_clean'] = products['product_name'].apply(lambda x: remove_accents(str(x).lower()))
