@@ -2,15 +2,14 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from data_loader import load_processed_data, load_ratings
-import recommender
-recommender.recommend_for_user_gensim(...)
-recommender.get_svd_recommendations(...)
+from recommender import recommend_for_user_gensim, get_svd_recommendations
 from utils import clean_text_row, stop_words
 from underthesea import word_tokenize
 import base64
 import unicodedata
 import sys
 import os
+
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 
 # ===== Helper Functions =====
@@ -35,7 +34,7 @@ def remove_accents(text):
 
 data, dictionary, tfidf, index = load_processed_data()
 ratings = load_ratings()
-products = data.dropna(subset=["Content", "product_name"]).copy()  # Clean NaNs
+products = data.dropna(subset=["Content", "product_name"]).copy()
 
 # Tạo thêm cột không dấu để tìm kiếm
 products['product_name_clean'] = products['product_name'].apply(lambda x: remove_accents(str(x).lower()))
