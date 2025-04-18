@@ -2,7 +2,9 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from data_loader import load_processed_data, load_ratings
-from recommender import recommend_for_user_gensim, get_svd_recommendations
+import recommender
+recommender.recommend_for_user_gensim(...)
+recommender.get_svd_recommendations(...)
 from utils import clean_text_row, stop_words
 from underthesea import word_tokenize
 import base64
