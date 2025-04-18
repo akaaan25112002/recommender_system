@@ -6,8 +6,10 @@ from recommender import recommend_for_user_gensim, get_svd_recommendations
 from utils import clean_text_row, stop_words
 from underthesea import word_tokenize
 import base64
-import os
 import unicodedata
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 
 # ===== Helper Functions =====
 

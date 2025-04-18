@@ -6,6 +6,6 @@ seaborn
 scikit-learn
 underthesea
 gensim
-surprise
+scikit-surprise
 gdown
 scipy==1.11.3
