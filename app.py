@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from data_loader import load_processed_data, load_ratings
-from recommender import recommend_for_user_gensim, get_svd_recommendations
+from recommender import get_svd_recommendations
 from utils import clean_text_row, stop_words
 from underthesea import word_tokenize
 import base64
@@ -109,14 +109,11 @@ elif selected_tab == "Tìm kiếm sản phẩm":
 elif selected_tab == "Gợi ý cho bạn":
     st.header("🎁 Gợi ý sản phẩm cho bạn")
     user_id = st.text_input("Nhập ID người dùng:")
-    method = st.radio("Chọn phương pháp gợi ý", ["SVD (Collaborative)", "Gensim (Content-Based)"])
+    method = st.radio("Chọn phương pháp gợi ý", ["SVD (Collaborative)"])
 
     if user_id:
         with st.spinner("Đang tạo gợi ý..."):
-            if method == "SVD (Collaborative)":
-                recs = get_svd_recommendations(user_id)
-            else:
-                recs = recommend_for_user_gensim(user_id)
+            recs = get_svd_recommendations(user_id)  # Chỉ sử dụng SVD bây giờ
 
         if isinstance(recs, pd.DataFrame):
             for _, row in recs.iterrows():
