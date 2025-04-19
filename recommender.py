@@ -1,42 +1,45 @@
 import pandas as pd
 import gdown
+import os
+import ast
 from surprise import SVD, Reader, Dataset
 import streamlit as st
 from gensim import corpora, models, similarities
-from underthesea import word_tokenize
-import os
-import ast
 from prepare_data import load_and_prepare_data
 
-# Gọi hàm để lấy dữ liệu sau khi file đã được tải xong
+# Gọi hàm để lấy dữ liệu đã chuẩn bị
 products, ratings, final_data = load_and_prepare_data()
-# ---------------- Tải dữ liệu từ Google Drive ---------------- #
 
-# Kiểm tra nếu file chưa có trong thư mục hiện tại
+# ---------------- Tải dữ liệu nếu chưa có ---------------- #
+
 if not os.path.exists("cleaned_products.csv"):
-    print("🔽 Đang tải Products file từ Google Drive...")
+    print("🔽 Đang tải cleaned_products.csv từ Google Drive...")
     gdown.download("https://drive.google.com/uc?id=16COzK3fj6pHSb1EBpQ6s-VL3KX5s0ufU", "cleaned_products.csv", quiet=False)
 
 if not os.path.exists("cleaned_ratings.csv"):
-    print("🔽 Đang tải Ratings file từ Google Drive...")
+    print("🔽 Đang tải cleaned_ratings.csv từ Google Drive...")
     gdown.download("https://drive.google.com/uc?id=16x--zf94wa8IH0mnr9TTT8lKUBwrQ9vk", "cleaned_ratings.csv", quiet=False)
 
-# ---------------- Gensim Model ---------------- #
+if not os.path.exists("models/svd_model.pkl"):
+    print("🔽 Đang tải mô hình SVD từ Google Drive...")
+    os.makedirs("models", exist_ok=True)
+    gdown.download("https://drive.google.com/uc?id=1HBRXZ2OfzPSow2TEvMPMSt1cMZOG27il", "models/svd_model.pkl", quiet=False)
 
-# Đọc dữ liệu từ các tệp CSV
+# ---------------- Gensim TF-IDF ---------------- #
+
+# Đọc lại dữ liệu sản phẩm đã lưu
 data = pd.read_csv("cleaned_products.csv")
-ratings = pd.read_csv("cleaned_ratings.csv")
 data['tokens'] = data['tokens'].apply(ast.literal_eval)
 
-# Tải các mô hình Gensim nếu đã có
+# Load hoặc tạo dictionary, tfidf và index
 if not os.path.exists("models/tfidf_dictionary.dict"):
-    print("🔽 Tải hoặc tạo các mô hình Gensim...") 
-    # Tạo dictionary và mô hình nếu chưa có
+    print("🔽 Đang tạo Gensim models...")
     dictionary = corpora.Dictionary(data['tokens'])
     dictionary.save("models/tfidf_dictionary.dict")
     tfidf = models.TfidfModel(dictionary)
     tfidf.save("models/tfidf_model.tfidf")
-    index = similarities.Similarity.load("models/tfidf_index.index")
+    index = similarities.Similarity(output_prefix="models/tfidf_index", corpus=[tfidf[dictionary.doc2bow(text)] for text in data['tokens']], num_features=len(dictionary))
+    index.save("models/tfidf_index.index")
 else:
     dictionary = corpora.Dictionary.load("models/tfidf_dictionary.dict")
     tfidf = models.TfidfModel.load("models/tfidf_model.tfidf")
@@ -80,11 +83,10 @@ def recommend_for_user_gensim(user_id, top_n=10):
 
     return all_recs.head(top_n)
 
-# ---------------- SVD Model ---------------- #
+# ---------------- SVD Collaborative Filtering ---------------- #
 
 import joblib
 
-# Load mô hình đã huấn luyện từ file .pkl
 @st.cache_resource
 def load_svd_model():
     return joblib.load("models/svd_model.pkl")
