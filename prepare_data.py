@@ -64,6 +64,9 @@ def load_and_prepare_data():
 
     final_data = pd.merge(ratings, products, how='inner', on='product_id')
     print("✅ Dữ liệu đã sẵn sàng!")
+    final_data.to_csv(os.path.join(DATA_DIR, "final_data.csv"), index=False)
+    print("💾 Đã lưu final_data.csv thành công!")
+
 
     return products, ratings, final_data
 
