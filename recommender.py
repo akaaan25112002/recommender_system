@@ -11,7 +11,21 @@ from prepare_data import load_and_prepare_data
 products, ratings, final_data = load_and_prepare_data()
 
 # ---------------- Tải dữ liệu nếu chưa có ---------------- #
+import requests
 
+# Hàm tải file từ Google Drive
+def download_from_google_drive(file_id, destination):
+    URL = f"https://drive.google.com/uc?id={file_id}&export=download"
+    session = requests.Session()
+    response = session.get(URL, stream=True)
+    
+    with open(destination, "wb") as file:
+        for chunk in response.iter_content(chunk_size=1024):
+            if chunk:
+                file.write(chunk)
+    
+    print(f"File saved as {destination}")
+    
 if not os.path.exists("cleaned_products.csv"):
     print("🔽 Đang tải cleaned_products.csv từ Google Drive...")
     gdown.download("https://drive.google.com/uc?id=16COzK3fj6pHSb1EBpQ6s-VL3KX5s0ufU", "cleaned_products.csv", quiet=False)
@@ -23,7 +37,7 @@ if not os.path.exists("cleaned_ratings.csv"):
 if not os.path.exists("models/svd_model.pkl"):
     print("🔽 Đang tải mô hình SVD từ Google Drive...")
     os.makedirs("models", exist_ok=True)
-    gdown.download("https://drive.google.com/uc?id=1HBRXZ2OfzPSow2TEvMPMSt1cMZOG27il", "models/svd_model.pkl", quiet=False)
+    gdown.download("https://drive.google.com/uc?id=1rrchIE01BwYNo0EAfs_hW_WVMv5Sb3eY", "models/svd_model.pkl", quiet=False)
 
 # ---------------- Gensim TF-IDF ---------------- #
 
